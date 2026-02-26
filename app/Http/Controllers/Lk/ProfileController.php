@@ -29,6 +29,8 @@ class ProfileController extends Controller
         $data = $request->validate([
             'city_name' => ['required', 'string', 'max:255'],
             'hh_region_id' => ['required', 'string', 'max:32'],
+        ], [
+            'hh_region_id.required' => 'Выберите регион из списка (город, область или край).',
         ]);
 
         $request->user()->update($data);
