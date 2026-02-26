@@ -12,7 +12,7 @@ use Illuminate\View\View;
 /**
  * ЛК: профиль пользователя.
  *
- * 2.2 — регион: из раздела «Личные данные» (город проживания) или ручной выбор;
+ * 2.2 — регион: из раздела «Личные данные» (регион проживания) или ручной выбор;
  * при ручном выборе используется список регионов как у HH.RU (город, область, край).
  */
 class ProfileController extends Controller
@@ -35,7 +35,7 @@ class ProfileController extends Controller
 
         $request->user()->update($data);
 
-        return back()->with('status', 'Город обновлен.');
+        return back()->with('status', 'Регион обновлен.');
     }
 
     public function updatePassword(Request $request): RedirectResponse

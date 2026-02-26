@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * Клиент к публичному API HH.RU.
  * 2.1 — получение вакансий (специализация и количество из config/career.php).
- * Список регионов — справочник HH.RU (город, область, край) через suggests/areas.
+ * Список регионов — справочник HH.RU через suggests/areas.
  */
 class HhClient
 {
