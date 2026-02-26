@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\HhClient;
 use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -43,9 +44,18 @@ class CareerVacancyController extends Controller
         $specialization = config('career.vacancy_specialization', 'менеджер');
         $cacheKey = 'hh:vacancies:'.mb_strtolower($specialization).':area:'.$regionId;
 
-        $payload = $this->cacheStore()->remember($cacheKey, now()->addMinutes($ttl), function () use ($regionId): array {
-            return $this->hhClient->vacanciesByArea((string) $regionId);
-        });
+        try {
+            $payload = $this->cacheStore()->remember($cacheKey, now()->addMinutes($ttl), function () use ($regionId): array {
+                return $this->hhClient->vacanciesByArea((string) $regionId);
+            });
+        } catch (RequestException $e) {
+            return response()->json([
+                'region' => null,
+                'region_hint' => null,
+                'vacancies' => [],
+                'error' => 'Регион не найден или сервис временно недоступен',
+            ], 422);
+        }
 
         return response()->json([
             'region' => $payload['region'],

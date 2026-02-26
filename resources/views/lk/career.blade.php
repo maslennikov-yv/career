@@ -120,6 +120,14 @@
             const query = regionId ? `?region_id=${encodeURIComponent(regionId)}` : '';
             const response = await fetch(`/api/career/vacancies${query}`);
             const payload = await response.json();
+
+            if (!response.ok) {
+                status.textContent = '';
+                list.innerHTML = '';
+                showToast(payload.error || payload.message || 'Ошибка загрузки вакансий');
+                return;
+            }
+
             render(payload);
         };
 
