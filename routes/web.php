@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AreaSuggestController;
 use App\Http\Controllers\Api\CareerVacancyController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegistrationController;
 use App\Http\Controllers\Lk\CareerPageController;
 use App\Http\Controllers\Lk\ProfileController;
@@ -26,6 +27,9 @@ Route::middleware('guest')->group(function (): void {
     Route::get('/register/password', [RegistrationController::class, 'showPasswordStep'])->name('register.password');
     Route::post('/register/password', [RegistrationController::class, 'storePassword'])->name('register.password.store');
 });
+
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'show'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'store'])->name('password.update');
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

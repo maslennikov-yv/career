@@ -22,7 +22,7 @@
                         class="absolute left-0 right-0 top-full z-10 mt-1 hidden max-h-64 overflow-auto rounded border bg-white shadow"
                     ></ul>
                 </div>
-                <input id="region-id-input" type="hidden" value="{{ $user->hh_region_id ?? '' }}">
+                <input id="region-id-input" type="hidden" value="{{ $user?->hh_region_id ?? '' }}">
             </label>
             <button id="load-vacancies" class="rounded bg-black px-4 py-2 text-white" type="button">Загрузить</button>
         </div>
@@ -65,6 +65,19 @@
             }, 4000);
         };
 
+        const escapeHtml = (str) => {
+            if (str == null) return '';
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        };
+
+        const safeUrl = (url) => {
+            if (typeof url !== 'string') return '#';
+            const u = url.trim();
+            return (u.startsWith('http://') || u.startsWith('https://')) ? u : '#';
+        };
+
         const render = (payload) => {
             list.innerHTML = '';
 
@@ -74,17 +87,24 @@
                 return;
             }
 
-            status.textContent = payload.region ? `Регион: ${payload.region}` : '';
+            status.textContent = payload.region ? `Регион: ${escapeHtml(payload.region)}` : '';
 
             const vacancies = payload.vacancies || [];
             vacancies.forEach((vacancy) => {
                 const li = document.createElement('li');
                 li.className = 'rounded bg-white p-4 shadow';
+                const name = escapeHtml(vacancy.name);
+                const areaName = escapeHtml(vacancy.area_name);
+                const employerName = escapeHtml(vacancy.employer_name ?? '');
+                const salaryFrom = vacancy.salary_from != null ? escapeHtml(String(vacancy.salary_from)) : '-';
+                const salaryTo = vacancy.salary_to != null ? escapeHtml(String(vacancy.salary_to)) : '-';
+                const currency = escapeHtml(vacancy.currency ?? '');
+                const url = safeUrl(vacancy.url);
                 li.innerHTML = `
-                    <h3 class="font-semibold">${vacancy.name}</h3>
-                    <p class="text-sm text-gray-600">${vacancy.area_name} · ${vacancy.employer_name ?? ''}</p>
-                    <p class="text-sm">ЗП: ${vacancy.salary_from ?? '-'} - ${vacancy.salary_to ?? '-'} ${vacancy.currency ?? ''}</p>
-                    <a class="text-sm underline" href="${vacancy.url}" target="_blank" rel="noreferrer">Открыть вакансию</a>
+                    <h3 class="font-semibold">${name}</h3>
+                    <p class="text-sm text-gray-600">${areaName} · ${employerName}</p>
+                    <p class="text-sm">ЗП: ${salaryFrom} - ${salaryTo} ${currency}</p>
+                    <a class="text-sm underline" href="${escapeHtml(url)}" target="_blank" rel="noreferrer">Открыть вакансию</a>
                 `;
                 list.appendChild(li);
             });
